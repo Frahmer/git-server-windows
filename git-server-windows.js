@@ -34,10 +34,6 @@ exports.server = function(config) {
    app.post(baseURL + '/:reponame/git-receive-pack', checkAuth, postReceivePack);
    app.post(baseURL + '/:reponame/git-upload-pack', checkAuth, postUploadPack);
 
-   app.listen(port, () => {
-      console.log('Git Server listening on port ' + port + ' ...');
-   });
-   
    if (config.https) {
       var httpsServer = require('https').createServer(config.https, app);
       httpsServer.listen(port, () => {
