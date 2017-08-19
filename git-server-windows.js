@@ -58,7 +58,7 @@ function checkAuth(req, res, next) {
    
    var users = defaultUsers;
 
-   // Die defaultUsers gelten f�r alle Repositories, au�er sie sind in der Liste gesondert aufgef�hrt
+   // The defaultUsers are valid for all repositories, unless they are listed separately in the repositories list
    
    if(repositories != undefined && repositories[reponame] != undefined)
       users = repositories[reponame];
