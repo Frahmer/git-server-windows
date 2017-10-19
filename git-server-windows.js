@@ -31,13 +31,20 @@ exports.server = function(config) {
    app.use(methodOverride());
    app.use(express.query());
 
-   app.get(baseURL + '/:reponame/info/refs', getInfoRefs);
+   app.get(baseURL + '/:reponame/info/refs', checkAuth, getInfoRefs);
    app.post(baseURL + '/:reponame/git-receive-pack', checkAuth, postReceivePack);
-   app.post(baseURL + '/:reponame/git-upload-pack', postUploadPack);
+   app.post(baseURL + '/:reponame/git-upload-pack', checkAuth, postUploadPack);
 
-   app.listen(port, () => {
-      console.log('Git Server listening on port ' + port + ' ...');
-   });
+   if (config.https) {
+      var httpsServer = require('https').createServer(config.https, app);
+      httpsServer.listen(port, () => {
+         console.log('Git Server with SSL listening on port ' + port + ' ...');
+      });
+   } else {
+      app.listen(port, () => {
+         console.log('Git Server listening on port ' + port + ' ...');
+      });
+   }
 };
 
 //
@@ -48,7 +55,7 @@ function checkAuth(req, res, next) {
    
    var users = defaultUsers;
 
-   // Die defaultUsers gelten für alle Repositories, außer sie sind in der Liste gesondert aufgeführt
+   // The defaultUsers are valid for all repositories, unless they are listed separately in the repositories list
    
    if(repositories != undefined && repositories[reponame] != undefined)
       users = repositories[reponame];
